@@ -203,3 +203,17 @@ class BatchLessonActivation(Base):
     __table_args__ = (
     UniqueConstraint('batch_id', 'lesson_id', name='unique_batch_lesson'),
 )
+    
+#### n8n test
+
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class Course(Base):
+    __tablename__ = 'courses'
+
+    id = Column(Integer, primary_key=True, index=True)
+    new_course = Column(String, index=True)
+    instructor_name = Column(String, index=True)

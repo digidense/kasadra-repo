@@ -3,26 +3,31 @@
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-# Note: The instructions specify PostgreSQL DB but engine SQLite.
-# Here, engine is set to SQLite for demo/testing. Adjust URL as needed.
+from sqlalchemy import create_engine
 
 Base = declarative_base()
 
 class AdminLogin(Base):
-    __tablename__ = 'admin_login'
+    __tablename__ = 'admin_logins'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
 
-# SQLite engine configuration
-engine = create_engine('sqlite:///kasadra_learning_app.db', echo=True, future=True)
+# Engine setup - SQLite as requested, though database is PostgreSQL (usually you'd match these)
+engine = create_engine('sqlite:///./test.db', echo=True)
 
-# Create tables
-Base.metadata.create_all(engine)
+# Create all tables
+Base.metadata.create_all(bind=engine)
 
-# Create a configured "Session" class and session instance for usage
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
+# Session factory
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+if __name__ == "__main__":
+    # Example usage: create a new admin login entry
+    session = SessionLocal()
+    new_admin = AdminLogin(name="admin_user")
+    session.add(new_admin)
+    session.commit()
+    session.close()
 ```

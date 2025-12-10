@@ -1,35 +1,43 @@
-from datetime import date
-from typing import List, Optional
-from sqlalchemy import Column, Date, ForeignKey, Integer, String, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+import enum
+from sqlalchemy import Column, Integer, String, DateTime, Enum, Boolean, ForeignKey, Date
+from sqlalchemy.orm import relationship
+from models.base import Base
+from datetime import datetime, date
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import func
 
 
-class Base(DeclarativeBase):
-    pass
-
+class RoleEnum(str, enum.Enum):
+    student = "student"
+    instructor = "instructor"
 
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    hashed_password: Mapped[str] = mapped_column(String, nullable=False)
-    is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=False, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    phone_no = Column(String, unique=True, nullable=False)
+    created_at = Column(Date, default=date.today)  
+    password = Column(String, nullable=False)
+    role = Column(Enum(RoleEnum), nullable=False)
 
-    tokens: Mapped[List["Token"]] = relationship("Token", back_populates="user", cascade="all, delete-orphan")
-    students: Mapped[List["StudentList"]] = relationship("StudentList", back_populates="user", cascade="all, delete-orphan")
+    token = relationship("Token", back_populates="user", uselist=False)
+    courses = relationship("Course", back_populates="instructor")
+    cart_items = relationship("Cart", back_populates="student", cascade="all, delete-orphan")
+    meetings = relationship("MeetingLink", back_populates="instructor", cascade="all, delete")
+
 
 
 class Token(Base):
     __tablename__ = "tokens"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    token: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    created_at: Mapped[date] = mapped_column(Date, default=func.now(), nullable=False)
-
-    user: Mapped["User"] = relationship("User", back_populates="tokens")
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    access_token = Column(String(450), unique=True)
+    refresh_token = Column(String(450), nullable=False)
+    status = Column(Boolean)
+    created_at = Column(Date, default=date.today)  
+    user = relationship("User", back_populates="token")
 
 
 class StudentList(Base):

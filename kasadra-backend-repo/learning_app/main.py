@@ -59,24 +59,9 @@ app.include_router(contents.lab_router,prefix="/api/contents")
 app.include_router(meeting_link.router,prefix="/api")
 app.include_router(lesson_activate.router,prefix="/api/activate")
 
-origins = [
-    "http://localhost:5173",   # React dev server
-    "http://127.0.0.1:5173",   
-    "http://127.0.0.1:8000",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174",
-    "http://127.0.0.1:8000", 
-    "http://127.0.0.1:8000/docs",
-    "http://127.0.0.1:8000/api/docs",
-    "http://www.softwarestack.xyz/api/",
-    "http://www.softwarestack.xyz",
-    "http://www.softwarestack.xyz/api/docs"
-
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,          
+    allow_origins=["*"],          
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -139,5 +124,5 @@ async def custom_validation_handler(request: Request, exc: RequestValidationErro
     )
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 

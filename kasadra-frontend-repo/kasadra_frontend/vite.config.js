@@ -4,10 +4,20 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    host: '0.0.0.0',
+    port: 5000,
+    allowedHosts: 'all',
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true
+      }
+    }
+  },
   test: {
-    globals: true,              // Use test/expect globally without import
-    environment: 'jsdom',       // Browser-like environment for testing
+    globals: true,
+    environment: 'jsdom',
     setupFiles: './src/setupTests.js'
-    // Setup file before tests run
   }
 })
